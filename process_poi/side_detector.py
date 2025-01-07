@@ -64,8 +64,8 @@ class POIProcessor:
         """
         segment_bearings = []
         for i in range(len(self.results) - 1):
-            lat1, lon1 = self.results[i]["coordinate"]["lat"], self.results[i]["coordinate"]["lon"]
-            lat2, lon2 = self.results[i + 1]["coordinate"]["lat"], self.results[i + 1]["coordinate"]["lon"]
+            lat1, lon1 = self.results[i]['coordinate']["lat"], self.results[i]['coordinate']["lon"]
+            lat2, lon2 = self.results[i + 1]['coordinate']["lat"], self.results[i + 1]['coordinate']["lon"]
             segment_bearing = self.calculate_bearing(lat1, lon1, lat2, lon2)
             segment_bearings.append(segment_bearing)
         return segment_bearings
@@ -76,8 +76,8 @@ class POIProcessor:
 
         """
         for i, result in enumerate(self.results):
-            source_lat = result["coordinate"]["lat"]
-            source_lon = result["coordinate"]["lon"]
+            source_lat = result['coordinate']["lat"]
+            source_lon = result['coordinate']["lon"]
             nearby_results = result["nearby"].get("result", [])
 
             # Use the average bearing of the current segment
@@ -155,12 +155,12 @@ class RoutePOIVisualizer:
         """
         data = pd.read_csv(self.csv_path)
 
-        required_columns = {'source_lat', 'source_lon', 'poi_name', 'poi_lat', 'poi_lon', 'side'}
+        required_columns = {'source_lat', 'source_lon', 'poi_name', 'optimal_lat', 'optimal_lon'}
         if not required_columns.issubset(data.columns):
             raise ValueError(f"File CSV cần các cột sau: {required_columns}")
 
         route_points = data[['source_lat', 'source_lon']].drop_duplicates().values.tolist()
-        pois = data[['poi_name', 'poi_lat', 'poi_lon', 'side']].values.tolist()
+        pois = data[['poi_name', 'optimal_lat', 'optimal_lon']].values.tolist()
 
         map_center = route_points[0] if route_points else [0, 0]
         my_map = folium.Map(location=map_center, zoom_start=15)
@@ -175,13 +175,12 @@ class RoutePOIVisualizer:
         ).add_to(my_map)
 
         # Add markers for POIs
-        for poi_name, poi_lat, poi_lon, side in pois:
-            color = "green" if side == "Right" else "red"
+        for poi_name, optimal_lat, optimal_lon in pois:
 
             folium.Marker(
-                location=[poi_lat, poi_lon],
-                popup=f"POI: {poi_name}\nSide: {side}",
-                icon=folium.Icon(color=color, icon="info-sign")
+                location=[optimal_lat, optimal_lon],
+                popup=f"POI: {poi_name}",
+                icon=folium.Icon(icon="info-sign")
             ).add_to(my_map)
 
         my_map.save(output_html)

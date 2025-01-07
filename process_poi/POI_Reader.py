@@ -2,7 +2,6 @@ import csv
 import requests
 import time
 
-
 class POIReader:
     def __init__(self, api_key, base_url, radius, place_type):
         """
@@ -27,6 +26,7 @@ class POIReader:
         except Exception as e:
             print(f"Error reading CSV file: {e}")
             return []
+
 
     def nearby_search(self, lat, lon):
         """
@@ -58,8 +58,8 @@ class POIReader:
                 writer.writerow(header)
 
                 for result in results:
-                    source_lat = result["coordinate"]["lat"]
-                    source_lon = result["coordinate"]["lon"]
+                    source_lat = result["lat"]
+                    source_lon = result["lon"]
                     nearby = result.get("nearby", {})
                     nearby_results = nearby.get("result", [])
                     code = nearby.get("code", "error")

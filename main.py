@@ -3,6 +3,7 @@ from process_poi.side_detector import (
      POIProcessor , 
      RoutePOIVisualizer
 )
+from process_poi.POI_Optimizer import POIOptimizer
 
 def main():
     # CSV,HTML input and output paths
